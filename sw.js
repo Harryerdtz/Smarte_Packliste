@@ -1,7 +1,7 @@
 /* PackForge service worker - offline app shell */
 'use strict';
 
-var VERSION = 'packforge-v1';
+var VERSION = 'packforge-v2';
 var APP_SHELL = [
   './',
   './index.html',

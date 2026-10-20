@@ -1,60 +1,63 @@
 # PackForge
 
-Smarte Packlisten-PWA im Pixel-Art-Look. Reisedauer, Kategorie und Wetter rein – Menge und Zusatz-Items kommen automatisch.
+Smarte Packlisten als dependency-freie PWA – Apple-Liquid-Glass-Oberfläche, keine Build-Kette, alles lokal.
+
+## Features
+
+- **Reise-Generator**: Reisename, Tages-Slider mit Stepper, Mehrfachauswahl der Reiseart (Städtetrip, Strand, Wandern, Business) und Wetter (Sonnig, Kalt, Regen).
+- **Rule Configurator**: Für Unterwäsche, Socken, Oberteile und Hosen/Unterteile lässt sich je Formel „1 pro 2 Tage“, „1 pro Tag“, „2 pro Tag“ oder „3 pro Tag“ plus Puffer (0–10) einstellen. Die Vorschau rechnet live mit der aktuellen Reisedauer; gespeichert wird automatisch.
+- **Interaktive Checkliste**: Glas-Karten nach Kategorien (Kleidung, Kulturbeutel, Dokumente, Technik, Sonstiges), animierte Checkboxen, Fortschrittsring nach Stückzahl, Mengen-Stepper, Löschen, eigene Items.
+- **Mengen neu berechnen**: übernimmt geänderte Formeln in eine bestehende Liste und behält Custom-Items sowie Haken.
+- **LocalStorage**: aktive Reise, Archiv (max. 30 Listen), Formeln und Vorlieben; JSON-Export/-Import und Reset.
+- **iPhone-PWA**: Safe-Area-Insets, 16px-Inputs gegen Auto-Zoom, `viewport-fit=cover`, Haptik via `navigator.vibrate` (wo unterstützt), Offline-App-Shell.
 
 ## Starten
-
-Kein Build, keine Abhängigkeiten. Einfach den Ordner statisch ausliefern:
 
 ```bash
 python3 -m http.server 4173
 # http://127.0.0.1:4173
 ```
 
-Alternativ über einen beliebigen Static-Host ausliefern. Für Service Worker und Installation wird HTTPS (oder `localhost`) benötigt.
-
-## Funktionen
-
-- **Generator**: Reise-Name, 1–60 Tage, Städtetrip / Strand / Outdoor / Business, Sonnig / Kalt / Gemischt.
-- **Auto-Mengen**: Unterwäsche und Socken = Tage + 1, T-Shirts = Tage, Hosen gestaffelt nach Kategorie.
-- **Wetter- und Kategorie-Items**: Badezeug, Wanderschuhe, Laptop, Regenschirm, Sonnencreme, Kulturbeutel und mehr.
-- **Kategorien**: Kleidung, Elektronik, Dokumente, Kosmetik, Sonstiges.
-- **Checkliste**: Pixel-Checkbox, durchgestrichene Optik, Fortschritt nach Stückzahl, Mengen anpassen, löschen.
-- **Eigene Items** mit Kategorie.
-- **Archiv**: alte Reisen laden oder löschen.
-- **Lokal**: LocalStorage, Export/Import als JSON, Reset.
-- **PWA**: Manifest, Icons, Offline-Cache, Safe Areas, große Touch-Flächen.
-- **Ohne Emojis**: ausschließlich CSS/SVG-Pixelgrafik.
+Für den Service Worker muss die App über `http://localhost` oder HTTPS laufen.
 
 ## Struktur
 
-```
-index.html            App-Shell und Pixel-Icon-Sprite
-app.css               Retro-Design, Mobile/Safe-Area-Layout
-app.js                UI-Controller, LocalStorage, Import/Export
-packing.js            reine Packlogik (auch per Node testbar)
-sw.js                 Service Worker (App-Shell offline)
-manifest.webmanifest  PWA-Manifest
-tools/make-icons.py   erzeugt die PNG-Icons ohne Abhängigkeiten
-```
+| Datei | Zweck |
+| --- | --- |
+| `index.html` | App-Shell, Inline-SVG-Icon-Sprite, drei Tabs |
+| `app.css` | Liquid-Glass-Designsystem, Animationen, Responsive |
+| `app.js` | State, Rendering, Events, Persistenz |
+| `packing.js` | Pure Packlogik und Formel-Engine (Node-testbar) |
+| `sw.js` | Offline-Cache der App-Shell |
+| `manifest.webmanifest` | PWA-Metadaten |
+| `icons/` | generierte Glas-Icons |
+| `tools/make-icons.py` | Icongenerator (Python-Standardbibliothek) |
 
 ## Tests
-
-Die Packlogik ist ohne DOM testbar:
 
 ```bash
 node --test tests/
 ```
 
-## Datenformat
+16 Tests decken Tages-Clamping, Formel-Normalisierung, Ratio/Puffer-Rechnung, Wetter- und Reiseart-Regeln, Kategorien, Fortschritt und Neuberechnung ab.
 
-Alles liegt unter dem LocalStorage-Key `packforge:v1`:
+## Speicherformat
+
+`localStorage["packforge:v2"]`:
 
 ```json
 {
-  "version": 1,
-  "active": { "id": "...", "name": "Wochenende Berlin", "days": 3, "category": "Städtetrip", "weather": "Sonnig", "createdAt": 0, "items": [] },
+  "version": 2,
+  "active": { "id": "…", "name": "Paris", "days": 5, "types": ["Städtetrip"], "weather": "Sonnig", "items": [] },
   "archive": [],
-  "prefs": { "category": "Städtetrip", "weather": "Sonnig" }
+  "prefs": { "days": 5, "types": ["Städtetrip"], "weather": "Sonnig" },
+  "rules": {
+    "underwear": { "perDay": 1, "buffer": 1 },
+    "socks": { "perDay": 1, "buffer": 1 },
+    "tops": { "perDay": 1, "buffer": 0 },
+    "bottoms": { "perDay": 0.5, "buffer": 0 }
+  }
 }
 ```
+
+Beim ersten Start werden Daten aus dem alten `packforge:v1`-Format (Pixel-Edition) automatisch übernommen: `Elektronik` → `Technik`, `Kosmetik` → `Kulturbeutel`, `Outdoor` → `Wandern`, `Gemischt` → `Regen`.

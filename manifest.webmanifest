@@ -1,15 +1,16 @@
 {
   "name": "PackForge – Smarte Packliste",
   "short_name": "PackForge",
-  "description": "Smarte Packlisten aus Reisedauer, Kategorie und Wetter. Pixel-Art, lokal gespeichert, offline-fähig.",
+  "description": "Smarte Packlisten aus Reisedauer, Reiseart und Wetter – mit eigenen Pack-Formeln. Glas-Oberfläche, lokal gespeichert, offline-fähig.",
   "lang": "de",
   "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#0b0a13",
-  "theme_color": "#0b0a13",
+  "orientation": "portrait",
+  "background_color": "#06070f",
+  "theme_color": "#06070f",
   "categories": ["travel", "productivity", "utilities"],
   "icons": [
     {
