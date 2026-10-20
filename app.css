@@ -291,6 +291,30 @@ body {
   z-index: -1;
 }
 
+/* luminous gradient hairline around every glass card */
+@supports ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.06) 34%,
+      rgba(140, 123, 255, 0.32) 66%,
+      rgba(79, 215, 255, 0.34) 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.8;
+    pointer-events: none;
+  }
+}
+
 @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
   .glass {
     background: linear-gradient(158deg, rgba(28, 30, 52, 0.97), rgba(16, 17, 32, 0.97));
