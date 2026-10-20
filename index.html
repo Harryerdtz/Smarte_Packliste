@@ -1,1 +1,296 @@
-abc
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>PackForge – Smarte Packliste</title>
+  <meta name="description" content="PackForge erzeugt deine smarte Packliste aus Reisedauer, Kategorie und Wetter. Pixel-Art PWA, offline-fähig.">
+  <meta name="theme-color" content="#0b0a13">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PackForge">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- Pixel icon sprite. No emojis anywhere in this app. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-bag" viewBox="0 0 16 16">
+        <path d="M5 2h6v1H5zM4 3h1v2H4zM11 3h1v2h-1z"/>
+        <path d="M2 5h12v1H2zM1 6h1v7H1zM14 6h1v7h-1zM2 13h12v1H2z"/>
+        <path d="M8 8h2v3H8zM3 6h1v7H3zM12 6h1v7h-1z"/>
+      </symbol>
+      <symbol id="i-shirt" viewBox="0 0 16 16">
+        <path d="M5 2h6v1H5zM3 3h3v1H3zM10 3h3v1h-3zM2 4h2v4H2zM12 4h2v4h-2zM4 5h2v2H4zM10 5h2v2h-2zM5 5h1v1H5zM10 5h1v1h-1z"/>
+        <path d="M4 8h8v7H4z"/>
+      </symbol>
+      <symbol id="i-plug" viewBox="0 0 16 16">
+        <path d="M5 1h2v4H5zM9 1h2v4H9zM3 5h10v2H3zM4 7h8v3H4zM6 10h4v2H6zM7 12h2v3H7z"/>
+      </symbol>
+      <symbol id="i-doc" viewBox="0 0 16 16">
+        <path d="M3 1h8l2 2v12H3zM10 1v3h3"/>
+        <path d="M5 6h6v1H5zM5 8h6v1H5zM5 10h4v1H5z"/>
+      </symbol>
+      <symbol id="i-bottle" viewBox="0 0 16 16">
+        <path d="M6 1h4v2H6zM5 3h6v2H5zM4 5h8v9H4zM5 12h6v1H5z"/>
+      </symbol>
+      <symbol id="i-box" viewBox="0 0 16 16">
+        <path d="M2 3h12v10H2zM3 2h10v1H3zM4 13h8v1H4zM7 6h2v4H7zM5 8h6v1H5z"/>
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 16 16">
+        <path d="M7 0h2v3H7zM7 13h2v3H7zM0 7h3v2H0zM13 7h3v2h-3zM2 2h2v2H2zM12 2h2v2h-2zM2 12h2v2H2zM12 12h2v2h-2z"/>
+        <path d="M5 5h6v6H5z"/>
+      </symbol>
+      <symbol id="i-snow" viewBox="0 0 16 16">
+        <path d="M7 0h2v16H7zM0 7h16v2H0zM2 2h2v2H2zM12 2h2v2h-2zM2 12h2v2H2zM12 12h2v2h-2z"/>
+        <path d="M4 4h2v2H4zM10 4h2v2h-2zM4 10h2v2H4zM10 10h2v2h-2z"/>
+      </symbol>
+      <symbol id="i-rain" viewBox="0 0 16 16">
+        <path d="M4 2h8v1H4zM2 3h2v1H2zM12 3h2v1h-2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2z"/>
+        <path d="M4 9h1v3H4zM8 9h1v4H8zM12 9h1v3h-1z"/>
+      </symbol>
+      <symbol id="i-city" viewBox="0 0 16 16">
+        <path d="M1 5h4v11H1zM6 2h4v14H6zM11 6h4v10h-4z"/>
+        <path d="M2 6h2v1H2zM2 8h2v1H2zM2 10h2v1H2zM7 3h2v1H7zM7 5h2v1H7zM7 7h2v1H7zM7 9h2v1H7zM12 7h2v1h-2zM12 9h2v1h-2zM12 11h2v1h-2z"/>
+      </symbol>
+      <symbol id="i-wave" viewBox="0 0 16 16">
+        <path d="M0 6h2v2H0zM2 4h2v2H2zM4 6h2v2H4zM6 8h2v2H6zM8 6h2v2H8zM10 4h2v2h-2zM12 6h2v2h-2zM14 8h2v2h-2z"/>
+        <path d="M0 11h3v1H0zM4 12h3v1H4zM8 11h3v1H8zM12 12h3v1h-3z"/>
+      </symbol>
+      <symbol id="i-mountain" viewBox="0 0 16 16">
+        <path d="M8 1h2v2H8zM6 3h2v3H6zM10 3h2v2h-2zM4 6h2v3H4zM12 4h2v4h-2zM2 9h2v3H2zM14 8h1v4h-1zM0 12h16v3H0z"/>
+      </symbol>
+      <symbol id="i-case" viewBox="0 0 16 16">
+        <path d="M5 1h6v3H5zM2 4h12v10H2zM3 3h10v1H3z"/>
+        <path d="M7 7h2v4H7z"/>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 16 16">
+        <path d="M12 3h2v2h-2zM10 5h2v2h-2zM8 7h2v2H8zM6 7h2v2H6zM4 5h2v2H4zM2 7h2v2H2z"/>
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 16 16">
+        <path d="M5 1h6v2H5zM2 3h12v2H2zM3 5h2v9H3zM11 5h2v9h-2zM5 13h6v2H5zM5 7h1v5H5zM8 7h1v5H8zM11 7h1v5h-1z"/>
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 16 16">
+        <path d="M7 2h2v12H7zM2 7h12v2H2z"/>
+      </symbol>
+      <symbol id="i-minus" viewBox="0 0 16 16">
+        <path d="M2 7h12v2H2z"/>
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 16 16">
+        <path d="M7 1h2v7H7zM4 6h2v2H4zM10 6h2v2h-2zM2 8h2v2H2zM12 8h2v2h-2zM3 10h10v2H3zM2 13h12v2H2z"/>
+      </symbol>
+      <symbol id="i-upload" viewBox="0 0 16 16">
+        <path d="M7 12h2V5H7zM4 5h2v2H4zM10 5h2v2h-2zM2 3h2v2H2zM12 3h2v2h-2zM3 1h10v2H3zM2 13h12v2H2z"/>
+      </symbol>
+      <symbol id="i-reset" viewBox="0 0 16 16">
+        <path d="M4 2h7v2H4zM2 4h2v6H2zM12 4h2v4h-2zM4 12h6v2H4zM10 10h2v2h-2zM12 8h2v2h-2z"/>
+        <path d="M1 1h3v3H1z"/>
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 16 16">
+        <path d="M2 7h9v2H2zM8 3h2v2H8zM10 5h2v2h-2zM8 11h2v2H8zM10 9h2v2h-2z"/>
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 16 16">
+        <path d="M2 2h3v3H2zM11 2h3v3h-3zM5 5h3v3H5zM8 8h3v3H8zM11 11h3v3h-3zM2 11h3v3H2zM11 5h3v3h-3zM2 5h3v3H2z"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" class="pixel-svg"><use href="#i-bag"></use></svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">PACK<em>FORGE</em></span>
+          <span class="brand__sub">TRAVEL INVENTORY SYSTEM</span>
+        </span>
+      </div>
+      <span class="badge badge--version">V1.0</span>
+    </header>
+
+    <main class="main">
+      <!-- ================= PLAN ================= -->
+      <section class="view" id="view-plan" aria-labelledby="tab-plan">
+        <div class="panel form-panel">
+          <div class="panel__head">
+            <h1 class="panel__title">REISE-GENERATOR</h1>
+            <span class="panel__hint">3 SCHRITTE</span>
+          </div>
+
+          <form id="trip-form" autocomplete="off">
+            <label class="field">
+              <span class="field__label">REISE-NAME</span>
+              <input class="input" id="trip-name" name="name" type="text" maxlength="40"
+                     placeholder="Wochenende Berlin" required>
+            </label>
+
+            <div class="field">
+              <span class="field__label" id="days-label">ANZAHL TAGE</span>
+              <div class="stepper stepper--days">
+                <button type="button" class="stepper__btn" data-step="-1" aria-label="Einen Tag weniger">
+                  <svg viewBox="0 0 16 16" class="pixel-svg"><use href="#i-minus"></use></svg>
+                </button>
+                <input class="input input--days" id="trip-days" name="days" type="number"
+                       inputmode="numeric" min="1" max="60" step="1" value="3"
+                       aria-labelledby="days-label">
+                <button type="button" class="stepper__btn" data-step="1" aria-label="Einen Tag mehr">
+                  <svg viewBox="0 0 16 16" class="pixel-svg"><use href="#i-plus"></use></svg>
+                </button>
+              </div>
+              <span class="field__hint">1 – 60 TAGE</span>
+            </div>
+
+            <div class="field">
+              <span class="field__label">REISE-KATEGORIE</span>
+              <div class="chips" role="group" aria-label="Reise-Kategorie">
+                <button type="button" class="chip" data-category="Städtetrip" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-city"></use></svg>
+                  STÄDTETRIP
+                </button>
+                <button type="button" class="chip" data-category="Strand" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-wave"></use></svg>
+                  STRAND
+                </button>
+                <button type="button" class="chip" data-category="Outdoor" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-mountain"></use></svg>
+                  OUTDOOR
+                </button>
+                <button type="button" class="chip" data-category="Business" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-case"></use></svg>
+                  BUSINESS
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field__label">WETTER</span>
+              <div class="chips chips--weather" role="group" aria-label="Wetter">
+                <button type="button" class="chip" data-weather="Sonnig" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-sun"></use></svg>
+                  SONNIG
+                </button>
+                <button type="button" class="chip" data-weather="Kalt" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-snow"></use></svg>
+                  KALT
+                </button>
+                <button type="button" class="chip" data-weather="Gemischt" aria-pressed="false">
+                  <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-rain"></use></svg>
+                  GEMISCHT
+                </button>
+              </div>
+            </div>
+
+            <button class="btn btn--primary btn--block" type="submit" id="generate-btn">
+              PACKLISTE GENERIEREN
+              <svg viewBox="0 0 16 16" class="pixel-svg btn__icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </button>
+            <p class="form-note">MENGEN WERDEN AUTOMATISCH AUS DEN REISETAGEN BERECHNET.</p>
+          </form>
+        </div>
+
+        <div id="active-root" class="active-root"></div>
+      </section>
+
+      <!-- ================= LISTEN ================= -->
+      <section class="view" id="view-lists" hidden aria-labelledby="tab-lists">
+        <div class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">ARCHIV</h2>
+            <span class="panel__hint" id="archive-count">0 LISTEN</span>
+          </div>
+          <div id="archive-root"></div>
+        </div>
+      </section>
+
+      <!-- ================= OPTIONEN ================= -->
+      <section class="view" id="view-settings" hidden aria-labelledby="tab-settings">
+        <div class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">DATEN</h2>
+            <span class="panel__hint">LOCAL JSON</span>
+          </div>
+          <p class="text-muted">Alle Listen liegen ausschließlich auf diesem Gerät (LocalStorage). Sichere sie als JSON oder spiele ein Backup zurück.</p>
+          <div class="stack">
+            <button class="btn btn--ghost" type="button" data-act="export">
+              <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-download"></use></svg>
+              EXPORT ALS JSON
+            </button>
+            <button class="btn btn--ghost" type="button" data-act="import">
+              <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-upload"></use></svg>
+              IMPORT AUS JSON
+            </button>
+            <input type="file" id="import-file" accept="application/json,.json" hidden>
+          </div>
+          <div class="stat-grid" id="storage-stats"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <h2 class="panel__title">SYSTEM</h2>
+            <span class="panel__hint">PIXEL EDITION</span>
+          </div>
+          <ul class="spec-list">
+            <li><span>VERSION</span><span>1.0.0</span></li>
+            <li><span>SPEICHER</span><span>LOCALSTORAGE</span></li>
+            <li><span>MODUS</span><span>OFFLINE-FÄHIG</span></li>
+            <li><span>DESIGN</span><span>PIXEL-ART / DARK</span></li>
+          </ul>
+          <div class="stack">
+            <button class="btn btn--danger" type="button" data-act="reset">
+              <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-reset"></use></svg>
+              ALLE DATEN LÖSCHEN
+            </button>
+          </div>
+          <p class="form-note">PACKFORGE · PIXEL-EDITION · KEINE CLOUD, KEIN TRACKING.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Hauptnavigation">
+      <button class="tab" id="tab-plan" type="button" data-tab="plan" aria-current="page">
+        <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-bag"></use></svg>
+        <span>PLAN</span>
+      </button>
+      <button class="tab" id="tab-lists" type="button" data-tab="lists">
+        <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-doc"></use></svg>
+        <span>LISTEN</span>
+        <span class="tab__badge" id="tab-badge" hidden>0</span>
+      </button>
+      <button class="tab" id="tab-settings" type="button" data-tab="settings">
+        <svg viewBox="0 0 16 16" class="pixel-svg" aria-hidden="true"><use href="#i-box"></use></svg>
+        <span>OPTIONEN</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__box panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 class="panel__title" id="modal-title">BIST DU SICHER?</h2>
+      <p class="text-muted" id="modal-text"></p>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" type="button" data-modal-close>ABBRECHEN</button>
+        <button class="btn btn--danger" type="button" id="modal-confirm">BESTÄTIGEN</button>
+      </div>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="noscript panel">PACKFORGE BENÖTIGT JAVASCRIPT, UM DEINE PACKLISTE ZU BERECHNEN.</div>
+  </noscript>
+
+  <script src="packing.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
