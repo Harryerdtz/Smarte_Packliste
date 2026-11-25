@@ -1,0 +1,11 @@
+{
+  "name": "Marktzettel – Einkaufsliste",
+  "short_name": "Marktzettel",
+  "description": "Deine schnelle Einkaufsliste, auch offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f4",
+  "theme_color": "#f6f7f4",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

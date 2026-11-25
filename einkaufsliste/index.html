@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Marktzettel">
+  <meta name="description" content="Deine einfache Einkaufsliste. Schnell, übersichtlich und auch offline verfügbar.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Marktzettel — Einkaufen, leicht gemacht</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Marktzettel Startseite">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>Marktzettel</span>
+      </a>
+      <button class="icon-button" id="shareButton" type="button" aria-label="Liste teilen" title="Liste teilen"><span aria-hidden="true">↗</span></button>
+    </header>
+
+    <main class="main-layout">
+      <aside class="sidebar" aria-label="Deine Listen">
+        <div class="sidebar-heading"><span>DEINE LISTEN</span><button class="text-icon-button" id="newListSide" type="button" aria-label="Neue Liste erstellen">＋</button></div>
+        <div class="list-nav" id="listNav"></div>
+        <div class="sidebar-tip"><span class="tip-icon" aria-hidden="true">✳</span><p>Deine Listen bleiben auf diesem Gerät gespeichert – auch ohne Internet.</p></div>
+      </aside>
+
+      <section class="content" aria-label="Einkaufsliste">
+        <div class="mobile-list-select">
+          <label class="sr-only" for="listPicker">Aktive Einkaufsliste</label>
+          <select id="listPicker"></select>
+          <button class="icon-button small" id="newListMobile" type="button" aria-label="Neue Liste erstellen">＋</button>
+        </div>
+
+        <div class="list-heading">
+          <div>
+            <p class="eyebrow" id="listEyebrow">DEIN NÄCHSTER EINKAUF</p>
+            <h1 id="listTitle">Einkaufsliste</h1>
+            <p class="list-subtitle" id="listSubtitle">Alles im Blick. Schritt für Schritt.</p>
+          </div>
+          <button class="more-button" id="listMenuButton" type="button" aria-label="Listenoptionen">•••</button>
+        </div>
+
+        <form class="add-form" id="addForm">
+          <label class="sr-only" for="itemInput">Artikel hinzufügen</label>
+          <span class="add-symbol" aria-hidden="true">＋</span>
+          <input id="itemInput" type="text" placeholder="Was brauchst du noch?" autocomplete="off" maxlength="80">
+          <button class="add-button" type="submit">Hinzufügen</button>
+        </form>
+
+        <div class="quick-categories" aria-label="Schnell hinzufügen">
+          <button type="button" data-quick="Obst" class="quick-chip"><span>●</span> Obst</button>
+          <button type="button" data-quick="Gemüse" class="quick-chip"><span>●</span> Gemüse</button>
+          <button type="button" data-quick="Milch" class="quick-chip"><span>●</span> Milch</button>
+          <button type="button" data-quick="Brot" class="quick-chip"><span>●</span> Brot</button>
+        </div>
+
+        <section class="items-section" aria-label="Artikel auf der Liste">
+          <div class="items-toolbar">
+            <div class="filter-tabs" role="group" aria-label="Artikel filtern">
+              <button type="button" class="filter-tab active" data-filter="open">Offen <span id="openCount">0</span></button>
+              <button type="button" class="filter-tab" data-filter="all">Alle</button>
+              <button type="button" class="filter-tab" data-filter="done">Erledigt</button>
+            </div>
+            <button class="sort-button" id="sortButton" type="button">A–Z <span aria-hidden="true">⌄</span></button>
+          </div>
+          <div class="progress-wrap" id="progressWrap" hidden>
+            <div class="progress-line"><span id="progressText">0 von 0 erledigt</span><span id="progressPercent">0%</span></div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+          <ul class="item-list" id="itemList" aria-live="polite"></ul>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-illustration" aria-hidden="true"><span>✓</span><i></i></div>
+            <h2>Deine Liste ist bereit</h2>
+            <p>Füge oben deinen ersten Artikel hinzu. Dann kann's losgehen.</p>
+          </div>
+          <div class="done-actions" id="doneActions" hidden><span id="doneSummary"></span><button type="button" id="clearDone">Erledigte entfernen</button></div>
+        </section>
+
+        <section class="staples-panel">
+          <div class="staples-copy"><span class="staples-icon" aria-hidden="true">↻</span><div><h2>Immer auf deiner Liste</h2><p>Diese Artikel kommen bei jeder neuen Liste dazu.</p></div></div>
+          <button id="manageStaples" class="manage-button" type="button">Verwalten <span aria-hidden="true">›</span></button>
+          <div id="stapleSummary" class="staple-summary"></div>
+        </section>
+
+        <footer class="footer-note"><span class="offline-dot"></span> Wird automatisch auf diesem Gerät gespeichert</footer>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="modal" class="modal">
+    <form method="dialog" class="modal-card" id="modalForm">
+      <button class="modal-close" value="cancel" aria-label="Schließen">×</button>
+      <p class="eyebrow" id="modalEyebrow">MARKTZETTEL</p>
+      <h2 id="modalTitle">Neue Liste</h2>
+      <div id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
